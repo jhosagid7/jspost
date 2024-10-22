@@ -41,7 +41,7 @@
                                         <td>{{ $item->address }}</td>
                                         <td>{{ $item->city }}</td>
                                         <td>{{ $item->phone }}</td>
-                                        <td>{{ $item->taxpayerId }}</td>
+                                        <td>{{ $item->taxpayer_id }}</td>
                                         <td>{{ $item->type }}</td>
                                         <td class="text-center">
 
