@@ -196,7 +196,7 @@
 
 
 
-    function validarInputNumberss(input) {
+    function validarInputNumbers(input) {
         // Expresión regular para validar el formato de números enteros y flotantes
         var regex = /^\d+(\.\d{1,2})?$/; // Para flotantes con hasta 2 decimales
         var regexEntero = /^\d+$/; // Para enteros
