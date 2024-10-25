@@ -67,11 +67,15 @@ trait UtilTrait
         if (!empty($monto) && is_numeric($monto)) {
 
             $config = Configuration::first();
+            if ($config->vat > 0) {
+                $iva = ($config->vat / 100);
+                $subtotal = ($monto / (1 + $iva));
 
-            $iva = ($config->vat / 100);
-            $subtotal = ($monto / (1 + $iva));
+                return array('iva' => $this->formatearMonto($subtotal * $iva), 'subtotal' => $this->formatearMonto($subtotal));
+            } else {
 
-            return array('iva' => round($subtotal * $iva), 'subtotal' => round($subtotal));
+                return array('iva' => 0, 'subtotal' => 0);
+            }
         }
 
         return array('iva' => 0, 'subtotal' => 0);
@@ -124,6 +128,21 @@ trait UtilTrait
 
         if ($sales != null && $sales->count() > 0) {
             session(['noty_sales' => $sales]);
+        }
+    }
+
+    function formatAmount($amount)
+    {
+        // Convert the value to float to ensure it is a decimal number
+        $amount = floatval($amount);
+
+        // Check if the amount has decimals
+        if (fmod($amount, 1) != 0) {
+            // If it has decimals, return the amount as float
+            return (float)$amount; // Ensure it is returned as float
+        } else {
+            // If it does not have decimals, return the amount as int
+            return (int)$amount; // Ensure it is returned as int
         }
     }
 }

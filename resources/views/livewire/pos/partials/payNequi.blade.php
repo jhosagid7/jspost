@@ -49,7 +49,7 @@
                                 <select class="form-control crypto-select info" disabled>
                                     <option>N°. TELÉFONO:</option>
                                 </select>
-                                <input class="form-control" oninput="validarInputNumber(this)"
+                                <input class="form-control" oninput="validarInputNumbers(this)"
                                     wire:model.live.debounce.750ms="phoneNumber" wire:keydown.enter.prevent='Store'
                                     type="number" id="phoneNumber">
                             </div>

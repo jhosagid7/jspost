@@ -45,7 +45,7 @@
                                                     <select class="form-control crypto-select info" disabled>
                                                         <option>N°. TELÉFONO:</option>
                                                     </select>
-                                                    <input class="form-control" oninput="validarInputNumber(this)"
+                                                    <input class="form-control" oninput="validarInputNumbers(this)"
                                                         wire:model.live.debounce.750ms="phoneNumber"
                                                         wire:keydown.enter.prevent='Store' type="number"
                                                         id="phoneNumber">
@@ -80,7 +80,7 @@
                                                         <select class="form-control crypto-select info" disabled>
                                                             <option>N°. CUENTA:</option>
                                                         </select>
-                                                        <input class="form-control" oninput="validarInputNumber(this)"
+                                                        <input class="form-control" oninput="validarInputNumbers(this)"
                                                             wire:model.live="acountNumber" type="text">
                                                     </div>
                                                     @error('nacount')
@@ -92,7 +92,7 @@
                                                         <select class="form-control crypto-select info" disabled>
                                                             <option>N°. DEPÓSITO:</option>
                                                         </select>
-                                                        <input class="form-control" oninput="validarInputNumber(this)"
+                                                        <input class="form-control" oninput="validarInputNumbers(this)"
                                                             wire:model.live="depositNumber" type="text">
                                                     </div>
                                                     @error('ndeposit')
@@ -112,7 +112,7 @@
                                                 <select class="form-control crypto-select info" disabled>
                                                     <option>INGRESA MONTO:</option>
                                                 </select>
-                                                <input class="form-control" oninput="validarInputNumber(this)"
+                                                <input class="form-control" oninput="validarInputNumbers(this)"
                                                     wire:model="amount" type="text" id="partialPayInput">
                                             </div>
                                             @error('amount')

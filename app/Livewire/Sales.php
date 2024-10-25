@@ -44,7 +44,7 @@ class Sales extends Component
         // dd($this->search3);
         if (Strlen($this->search3) > 1) {
             $this->products = Product::with('priceList')
-                ->where('sku', $this->search3)
+                ->where('sku', 'like', "%{$this->search3}%")
                 ->orWhere('name', 'like', "%{$this->search3}%")
                 ->get();
             if (count($this->products) == 0) {
@@ -83,29 +83,29 @@ class Sales extends Component
 
     function updatedCashAmount()
     {
-        if (floatval($this->totalCart) > 0) {
+        if ($this->formatAmount($this->totalCart) > 0) {
 
 
-            if (round(floatval($this->cashAmount))  >= floatval($this->totalCart)) {
+            if ($this->formatAmount($this->cashAmount) >= $this->formatAmount($this->totalCart)) {
                 $this->nequiAmount = null;
                 $this->phoneNumber = null;
             }
 
-            $this->change = (round(floatval($this->cashAmount) + floatval($this->nequiAmount)) - floatval($this->totalCart));
+            $this->change = ($this->formatAmount($this->cashAmount) + $this->formatAmount($this->nequiAmount)) - ($this->formatAmount($this->totalCart));
         }
     }
     function updatedNequiAmount()
     {
-        if (floatval($this->totalCart) > 0) {
-            $this->change = (round(floatval($this->cashAmount) + floatval($this->nequiAmount)) - floatval($this->totalCart));
+        if ($this->formatAmount($this->totalCart) > 0) {
+            $this->change = ($this->formatAmount($this->cashAmount) + $this->formatAmount($this->nequiAmount)) - ($this->formatAmount($this->totalCart));
         }
     }
     function updatedPhoneNumber()
     {
-        if (floatval($this->totalCart) > 0 && $this->phoneNumber != '') {
-            $this->change = (round(floatval($this->cashAmount) + floatval($this->nequiAmount)) - floatval($this->totalCart));
+        if ($this->formatAmount($this->totalCart) > 0 && $this->phoneNumber != '') {
+            $this->change = ($this->formatAmount($this->cashAmount) + $this->formatAmount($this->nequiAmount)) - ($this->formatAmount($this->totalCart));
         } else {
-            $this->change = round(floatval($this->cashAmount) - floatval($this->totalCart));
+            $this->change = ($this->formatAmount($this->cashAmount) - $this->formatAmount($this->totalCart));
             $this->nequiAmount = 0;
         }
     }
@@ -139,17 +139,17 @@ class Sales extends Component
 
         $this->checkCreditSales();
         $this->cart = $this->cart->sortBy('name');
-        $this->taxCart = round($this->totalIVA());
+        $this->taxCart = $this->formatAmount($this->totalIVA());
         $this->itemsCart = $this->totalItems();
-        $this->totalCart = round($this->totalCart());
+        $this->totalCart = $this->formatAmount($this->totalCart());
         if ($this->config->vat > 0) {
             $this->iva = $this->config->vat / 100;
-            $this->subtotalCart = round($this->subtotalCart() / (1 + $this->iva));
-            $this->ivaCart = round(($this->totalCart() / (1 + $this->iva)) * $this->iva);
+            $this->subtotalCart = $this->formatAmount($this->subtotalCart() / (1 + $this->iva));
+            $this->ivaCart = $this->formatAmount(($this->totalCart() / (1 + $this->iva)) * $this->iva);
         } else {
             $this->iva = $this->config->vat;
-            $this->subtotalCart = round($this->subtotalCart());
-            $this->ivaCart = round(0);
+            $this->subtotalCart = $this->formatAmount($this->subtotalCart());
+            $this->ivaCart = $this->formatAmount(0);
         }
 
 
@@ -181,27 +181,44 @@ class Sales extends Component
             return;
         }
 
-        //iva venezuela 16%
-        $iva = ($this->config->vat / 100);
-        //determinamos el precio de venta(con iva)
         if (count($product->priceList) > 0)
             $salePrice = ($product->priceList[0]['price']);
         else
             $salePrice =  $product->price;
 
-        // precio unitario sin iva
-        $precioUnitarioSinIva =  $salePrice / (1 + $iva);
-        // subtotal neto
-        $subtotalNeto =   $precioUnitarioSinIva * intval($qty);
-        //monto iva
-        $montoIva = $subtotalNeto  * $iva;
-        //total con iva
-        $totalConIva =  $subtotalNeto + $montoIva;
+        //determinamos el precio de venta(con iva)
+        if ($this->config->vat > 0) {
+            //iva venezuela 16%
+            $iva = ($this->config->vat / 100);
 
-        $tax = $montoIva;
-        $total = $totalConIva;
+            // precio unitario sin iva
+            $precioUnitarioSinIva =  $salePrice / (1 + $iva);
+            // subtotal neto
+            $subtotalNeto =   $precioUnitarioSinIva * $this->formatAmount($qty);
+            //monto iva
+            $montoIva = $subtotalNeto  * $iva;
+            //total con iva
+            $totalConIva =  $subtotalNeto + $montoIva;
+
+            $tax = $montoIva;
+            $total = $totalConIva;
+        } else {
+            // precio unitario sin iva
+            $precioUnitarioSinIva =  $salePrice;
+            // subtotal neto
+            $subtotalNeto =   $precioUnitarioSinIva * $this->formatAmount($qty);
+            //monto iva
+            $montoIva = 0;
+            //total con iva
+            $totalConIva =  $subtotalNeto + $montoIva;
+
+            $tax = $montoIva;
+            $total = $totalConIva;
+        }
+
 
         $uid = uniqid() . $product->id;
+
 
         $coll = collect(
             [
@@ -213,7 +230,7 @@ class Sales extends Component
                 'price2' => $product->price2,
                 'sale_price' => $salePrice,
                 'pricelist' => $product->priceList,
-                'qty' => intval($qty),
+                'qty' => $this->formatAmount($qty),
                 'tax' => $tax,
                 'total' => $total,
                 'stock' => $product->stock_qty,
@@ -236,19 +253,22 @@ class Sales extends Component
 
     function Calculator($price, $qty)
     {
-        //iva méxico 16%
-        $iva = ($this->config->vat / 100); // 0.16;
-        //determinamos el precio de venta(con iva)
-        $salePrice = $price;
-        // precio unitario sin iva
-        $precioUnitarioSinIva =  $salePrice / (1 + $iva);
-        // subtotal neto
-        $subtotalNeto =   $precioUnitarioSinIva * intval($qty);
-        //monto iva
-        $montoIva = $subtotalNeto  * $iva;
-        //total con iva
-        $totalConIva =  $subtotalNeto + $montoIva;
-
+        // dd($qty);
+        if ($this->config->vat > 0) {
+            $iva = ($this->config->vat / 100); // 0.16;
+            $salePrice = $price;
+            $precioUnitarioSinIva =  $salePrice / (1 + $iva);
+            $subtotalNeto =   $precioUnitarioSinIva * $this->formatAmount($qty);
+            $montoIva = $subtotalNeto  * $iva;
+            $totalConIva =  $subtotalNeto + $montoIva;
+        } else {
+            $iva = 0; // 0.16;
+            $salePrice = $price;
+            $precioUnitarioSinIva =  $salePrice;
+            $subtotalNeto =   (floatval($precioUnitarioSinIva) * floatval($qty));
+            $montoIva = $subtotalNeto;
+            $totalConIva =  $subtotalNeto;
+        }
         return [
             'sale_price' => $salePrice,
             'neto' => $subtotalNeto,
@@ -273,7 +293,8 @@ class Sales extends Component
 
     public function updateQty($uid, $cant = 1, $product_id = null)
     {
-        //dd($uid, $cant);
+
+        // dd($uid, $cant);
         if (!is_numeric($cant)) {
             $this->dispatch('noty', msg: 'EL VALOR DE LA CANTIDAD ES INCORRECTO');
             return;
@@ -289,13 +310,16 @@ class Sales extends Component
 
 
         $newItem = $oldItem;
-        $newItem['qty'] = $product_id == null ? intval($cant) : intval($newItem['qty'] + $cant);
+        $newItem['qty'] = $product_id == null ? $this->formatAmount($cant) : $this->formatAmount($newItem['qty'] + $cant);
 
+        // dd($this->formatAmount($newItem['qty']));
+        // dd($cant + $newItem['qty'] . ' - ' . $cant . ' ' . $newItem['qty']);
         $values = $this->Calculator($newItem['sale_price'], $newItem['qty']);
 
         $newItem['tax'] = $values['iva'];
 
-        $newItem['total'] = round($values['total']);
+        $newItem['total'] = $this->formatAmount($values['total']);
+
 
 
         //delete from cart
@@ -338,7 +362,7 @@ class Sales extends Component
 
         $newItem['tax'] = $values['iva'];
 
-        $newItem['total'] = round($values['total']);
+        $newItem['total'] = $this->formatAmount($values['total']);
 
 
         //delete from cart
@@ -455,11 +479,12 @@ class Sales extends Component
     //save sale
     function Store()
     {
+
         $type = $this->payType;
 
         //dd(session("cart"));
         //type:  1 = efectivo, 2 = crédito, 3 = depósito
-        if (floatval($this->totalCart) <= 0) {
+        if ($this->formatAmount($this->totalCart) <= 0) {
             $this->dispatch('noty', msg: 'AGREGA PRODUCTOS AL CARRITO');
             return;
         }
@@ -536,7 +561,7 @@ class Sales extends Component
                 'type' => $type == 1 ? 'cash' : ($type == 2 ? 'credit' : ($type == 3 ? 'deposit' : ($type == 4 ? 'nequi' : 'cash/nequi'))),
                 'status' => ($type == 2 ?  'pending' : 'paid'),
                 'cash' => $this->cashAmount,
-                'change' => $type == 1 ? round((floatval($this->cashAmount) + floatval($this->nequiAmount)) - floatval($this->totalCart())) : 0,
+                'change' => $type == 1 ? $this->formatAmount(($this->formatAmount($this->cashAmount) + $this->formatAmount($this->nequiAmount)) - $this->formatAmount($this->totalCart())) : 0,
                 'notes' => $notes
             ]);
 
@@ -600,9 +625,9 @@ class Sales extends Component
 
     function validateCash()
     {
-        $total = floatval($this->totalCart);
-        $cash = floatval($this->cashAmount);
-        $nequi = floatval($this->nequiAmount);
+        $total = $this->formatAmount($this->totalCart);
+        $cash = $this->formatAmount($this->cashAmount);
+        $nequi = $this->formatAmount($this->nequiAmount);
         if ($cash + $nequi < $total) {
             return false;
         }

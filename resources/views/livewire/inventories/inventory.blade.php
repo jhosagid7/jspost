@@ -24,52 +24,56 @@
                     </thead>
                     <tbody>
                         @forelse($info as $item)
-                        <tr class="text-center">
-                            <td class="text-start">{{$item->sku}}</td>
-                            <td class="text-start text-primary">{{$item->name}}</td>
+                            <tr class="text-center">
+                                <td class="text-start">{{ $item->sku }}</td>
+                                <td class="text-start text-primary">{{ $item->name }}</td>
 
-                            <td style="background-color: rgb(253, 251, 224)">{{$item->stock_qty}}</td>
-                            <td>{{$item->cost}}</td>
-                            <td style="background-color: rgb(210, 247, 234)">${{ round($item->stock_qty *
-                                $item->cost,2) }}
-                            </td>
-                            <td>{{$item->price}}</td>
-                            <td style="background-color: rgb(210, 247, 234)">${{ round($item->stock_qty *
-                                $item->price,2) }}
-                            </td>
-                            <td>
-                                <input type="text" class="form-control form-control-sm text-center"
-                                    oninput="justNumber(this)" id="qty{{$item->id}}" placeholder="cant" maxlength="10">
-                            </td>
-                            <td>
-                                <div class="btn-group btn-group-pill" role="group" aria-label="Basic example">
+                                <td style="background-color: rgb(253, 251, 224)">{{ $item->stock_qty }}</td>
+                                <td>{{ $item->cost }}</td>
+                                <td style="background-color: rgb(210, 247, 234)">
+                                    ${{ round($item->stock_qty * $item->cost, 2) }}
+                                </td>
+                                <td>{{ $item->price }}</td>
+                                <td style="background-color: rgb(210, 247, 234)">
+                                    ${{ round($item->stock_qty * $item->price, 2) }}
+                                </td>
+                                <td>
+                                    <input type="text" class="form-control form-control-sm text-center"
+                                        oninput="justNumbers(this)" id="qty{{ $item->id }}" placeholder="cant"
+                                        maxlength="10">
+                                </td>
+                                <td>
+                                    <div class="btn-group btn-group-pill" role="group" aria-label="Basic example">
 
-                                    <button wire:click.prevent="Ajustar({{ $item->id }}, getValue({{$item->id}}), 2)"
-                                        data-container="body" data-bs-toggle="tooltip" data-bs-placement="top"
-                                        data-bs-html="true" data-bs-title="<b>Agregar cantidad al stock</b>"
-                                        class="btn btn-light btn-sm"><i class="icofont icofont-ui-add"></i>
-                                    </button>
+                                        <button
+                                            wire:click.prevent="Ajustar({{ $item->id }}, getValue({{ $item->id }}), 2)"
+                                            data-container="body" data-bs-toggle="tooltip" data-bs-placement="top"
+                                            data-bs-html="true" data-bs-title="<b>Agregar cantidad al stock</b>"
+                                            class="btn btn-light btn-sm"><i class="icofont icofont-ui-add"></i>
+                                        </button>
 
-                                    <button wire:click.prevent="Ajustar({{ $item->id }}, getValue({{$item->id}}), 1)"
-                                        data-container="body" data-bs-toggle="tooltip" data-bs-placement="top"
-                                        data-bs-html="true" data-bs-title="<b>Restar cantidad al stock</b>"
-                                        class="btn btn-light btn-sm"><i class="icofont icofont-minus"></i>
-                                    </button>
+                                        <button
+                                            wire:click.prevent="Ajustar({{ $item->id }}, getValue({{ $item->id }}), 1)"
+                                            data-container="body" data-bs-toggle="tooltip" data-bs-placement="top"
+                                            data-bs-html="true" data-bs-title="<b>Restar cantidad al stock</b>"
+                                            class="btn btn-light btn-sm"><i class="icofont icofont-minus"></i>
+                                        </button>
 
 
-                                    <button wire:click.prevent="Ajustar({{ $item->id }}, getValue({{$item->id}}), 3)"
-                                        class="btn btn-light btn-sm" data-container="body" data-bs-toggle="tooltip"
-                                        data-bs-placement="top" data-bs-html="true"
-                                        data-bs-title="<b>Ajustar cantidad del stock</b>"><i
-                                            class="icofont icofont-calculator-alt-1"></i>
-                                    </button>
-                                </div>
-                            </td>
-                        </tr>
+                                        <button
+                                            wire:click.prevent="Ajustar({{ $item->id }}, getValue({{ $item->id }}), 3)"
+                                            class="btn btn-light btn-sm" data-container="body" data-bs-toggle="tooltip"
+                                            data-bs-placement="top" data-bs-html="true"
+                                            data-bs-title="<b>Ajustar cantidad del stock</b>"><i
+                                                class="icofont icofont-calculator-alt-1"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
                         @empty
-                        <tr>
-                            <td colspan="6" class="text-center">Sin resultados</td>
-                        </tr>
+                            <tr>
+                                <td colspan="6" class="text-center">Sin resultados</td>
+                            </tr>
                         @endforelse
 
                     </tbody>
@@ -118,28 +122,40 @@
 
     <script>
         document.addEventListener('livewire:init', function() {
-            Livewire.on('clear-input', event => { 
-                document.getElementById('qty'+ event.id).value = ''
-             })
-       
-         })
+            Livewire.on('clear-input', event => {
+                document.getElementById('qty' + event.id).value = ''
+            })
+
+        })
+
         function getValue(inputId) {
-        var ele = document.getElementById('qty' + inputId)
-        if(ele != null) {
-            return parseInt(ele.value)
-        } else {
-            return 0
-        }
+            var ele = document.getElementById('qty' + inputId)
+            if (ele != null) {
+                return parseInt(ele.value)
+            } else {
+                return 0
+            }
 
         }
-        
 
-        function justNumber(input) {    
-            var regex = /^\d*\.?\d{0,2}$/    
-    
-            if (!regex.test(input.value)) {                
-                input.value = input.value.slice(0, -1)
+        function justNumbers(input) {
+            // Expresión regular para validar el formato de números enteros y flotantes
+            var regex = /^\d+(\.\d{0,2})?$/; // Permite enteros y flotantes con hasta 2 decimales
+
+            // Validar si el valor del input coincide con la expresión regular
+            if (!regex.test(input.value)) {
+                // Si el valor no coincide, deshabilitar la entrada del último carácter ingresado
+                input.value = input.value.slice(0, -1);
             }
         }
+
+
+        // function justNumber(input) {
+        //     var regex = /^\d*\.?\d{0,2}$/
+
+        //     if (!regex.test(input.value)) {
+        //         input.value = input.value.slice(0, -1)
+        //     }
+        // }
     </script>
 </div>

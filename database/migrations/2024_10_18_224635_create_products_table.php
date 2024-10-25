@@ -23,13 +23,13 @@ class CreateProductsTable extends Migration
             $table->decimal('cost', 10, 2);
             $table->decimal('price', 10, 2);
             $table->boolean('manage_stock')->default(1);
-            $table->integer('stock_qty');
+            $table->decimal('stock_qty', 10, 2);
             $table->integer('low_stock');
             $table->unsignedBigInteger('supplier_id');
             $table->unsignedBigInteger('category_id');
             $table->timestamp('deleted_at')->nullable();
             $table->timestamps();
-            
+
             $table->foreign('category_id', 'products_category_id_foreign')->references('id')->on('categories');
             $table->foreign('supplier_id', 'products_supplier_id_foreign')->references('id')->on('suppliers');
         });

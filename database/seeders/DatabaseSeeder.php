@@ -36,7 +36,7 @@ class DatabaseSeeder extends Seeder
 
         // test customes
         Customer::create([
-            'name' => 'Testing Customer',
+            'name' => 'Consumidor Final',
             'address' => 'Address',
             'email' => 'customer@a.com',
             'phone' => '81000333',
@@ -60,8 +60,8 @@ class DatabaseSeeder extends Seeder
             'description' => 'Una pc de alto rendimiento para gaming',
             'type' => 'physical',
             'status' => 'available',
-            'cost' => 549,
-            'price' => 899,
+            'cost' => 1000,
+            'price' => 2000,
             'manage_stock' => 1,
             'stock_qty' => 100,
             'low_stock' => 5,
@@ -77,10 +77,11 @@ class DatabaseSeeder extends Seeder
                 'address' => 'VENEZUELA',
                 'phone' => '5555555',
                 'taxpayer_id' => 'RUT123456',
-                'vat' => 16,
+                'vat' => 0,
                 'printer_name' => '80mm',
                 'leyend' => 'Gracias por su compra!',
                 'website' => 'https://jhonnypirela.dev',
+                'city' => 'Venezuela',
                 'credit_days' => 15
             ]
         );
@@ -90,7 +91,7 @@ class DatabaseSeeder extends Seeder
         $adminUser = User::create([
             'name' => 'Jhonny Pirela',
             'email' => 'jhosagid7@gmail.com',
-            'password' => bcrypt('123'),
+            'password' => bcrypt('jhosagid'),
             'profile' => 'Administrador'
         ]);
 

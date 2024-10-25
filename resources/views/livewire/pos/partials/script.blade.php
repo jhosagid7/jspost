@@ -55,7 +55,7 @@
 
     function updateQty(product_id, uid, option) {
 
-        var qty = parseInt(document.getElementById('p' + product_id).value)
+        var qty = parseFloat(document.getElementById('p' + product_id).value)
         if (option == 'increment')
             qty += 1
         else
@@ -188,26 +188,38 @@
 
 
 
-    function validarInputNumber(input) {
-        // expresión regular para validar el formato del número
-        var regex = /^\d+(\.\d{1,2})?$/;
+    function validarInputNumberss(input) {
+        // Expresión regular para validar el formato de números enteros y flotantes
+        var regex = /^\d+(\.\d{1,2})?$/; // Para flotantes con hasta 2 decimales
+        var regexEntero = /^\d+$/; // Para enteros
 
-        // Validar si el valor del input coincide con la expresión regular
-        if (!regex.test(input.value)) {
-            input.value = ''
+        // Validar si el valor del input coincide con alguna de las expresiones regulares
+        if (!regex.test(input.value) && !regexEntero.test(input.value)) {
+            input.value = ''; // Si no coincide, limpiar el input
         }
     }
 
     function justNumber(input) {
-        // Expresión regular para validar el formato del número
-        var regex = /^\d*\.?\d{0,2}$/;
+        // Expresión regular para validar el formato de números enteros y flotantes
+        var regex = /^\d+(\.\d{0,2})?$/; // Permite enteros y flotantes con hasta 2 decimales
 
         // Validar si el valor del input coincide con la expresión regular
         if (!regex.test(input.value)) {
-            // Si el valor no coincide, deshabilitar la entrada del último caracter ingresado
+            // Si el valor no coincide, deshabilitar la entrada del último carácter ingresado
             input.value = input.value.slice(0, -1);
         }
     }
+
+    // function justNumber(input) {
+    //     // Expresión regular para validar el formato del número
+    //     var regex = /^\d*\.?\d{0,2}$/;
+
+    //     // Validar si el valor del input coincide con la expresión regular
+    //     if (!regex.test(input.value)) {
+    //         // Si el valor no coincide, deshabilitar la entrada del último caracter ingresado
+    //         input.value = input.value.slice(0, -1);
+    //     }
+    // }
 
 
 

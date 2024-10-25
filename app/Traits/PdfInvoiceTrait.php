@@ -105,7 +105,7 @@ trait PdfInvoiceTrait
                     ->payUntilDays($credit_days)
                     ->currencySymbol('$')
                     ->currencyCode('Peso(s)')
-                    ->currencyDecimals(0)
+                    ->currencyDecimals(2)
                     ->currencyFormat('{SYMBOL}{VALUE}')
                     ->currencyThousandsSeparator('.')
                     ->currencyDecimalPoint(',')

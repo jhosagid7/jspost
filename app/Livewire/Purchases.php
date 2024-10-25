@@ -6,10 +6,11 @@ use Carbon\Carbon;
 use App\Models\Product;
 use Livewire\Component;
 use App\Models\Purchase;
+use App\Traits\UtilTrait;
 use Illuminate\Support\Arr;
 use Livewire\Attributes\On;
+use App\Models\Configuration;
 use App\Models\PurchaseDetail;
-use App\Traits\UtilTrait;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 
@@ -21,6 +22,7 @@ class Purchases extends Component
     public $taxCart = 0, $itemsCart, $subtotalCart = 0, $totalCart = 0, $ivaCart = 0, $status = 'paid', $purchaseType = 'cash', $notes;
     public $supplier, $flete;
     public $search, $productSelected;
+    public $config, $vat;
 
     public function mount()
     {
@@ -44,8 +46,17 @@ class Purchases extends Component
         $this->taxCart = round($this->totalIVA(), 2);
         $this->itemsCart = $this->totalItems();
         $this->totalCart = round($this->totalCart() + floatval($this->flete), 2);
-        $this->subtotalCart = round($this->totalCart / 1.14, 2);
-        $this->ivaCart = round(($this->totalCart / 1.14) * 0.14, 2);
+        $this->config = Configuration::first();
+        if ($this->config->vat > 0) {
+            $this->vat = $this->config->vat / 100;
+            $this->subtotalCart = round($this->subtotalCart() / (1 + $this->vat));
+            $this->ivaCart = round(($this->totalCart() / (1 + $this->vat)) * $this->vat);
+        } else {
+            $this->vat = $this->config->vat;
+            $this->subtotalCart = round($this->subtotalCart());
+            $this->ivaCart = round(0);
+        }
+
 
         return view('livewire.purchases.purchases', [
             'searchResults' => $this->searchProduct()
@@ -90,9 +101,9 @@ class Purchases extends Component
     }
 
     //-------------------------------------------------------------------------//
-    //                  metodos locales del carrito 
+    //                  metodos locales del carrito
     //-------------------------------------------------------------------------//
-    /* puedes colocar toda la lógica siguiente en un trait 
+    /* puedes colocar toda la lógica siguiente en un trait
     o en un helper para hacerlo reutilizable en cualquier parte del proyecto */
     function AddProduct($product, $qty = 1)
     {
@@ -116,7 +127,7 @@ class Purchases extends Component
                 'cost' => $cost,
                 'qty' => floatval($qty),
                 'total' => $total,
-                'tax' => ($total / 1.14) * 0.14,
+                'tax' => ($total / $this->iva) * $this->iva,
                 'flete' => array('flete_producto' =>  0, 'total_flete' => 0, 'valor_flete' => 0, 'nuevo_total' => 0),
 
 
@@ -153,14 +164,14 @@ class Purchases extends Component
 
         //$newItem['flete'] = $this->getItemFlete($newItem['total'], $newItem['qty'], $cost);
 
-        //delete from cart       
+        //delete from cart
         $this->cart = $this->cart->reject(function ($product) use ($uid) {
             return $product['id'] === $uid;
         });
 
         $this->save();
 
-        //add item to cart           
+        //add item to cart
         $this->cart->push(Arr::add(
             $newItem,
             null,
@@ -191,14 +202,14 @@ class Purchases extends Component
 
         $newItem['total'] = round($newItem['qty'] * $newItem['cost'], 2);
 
-        //delete from cart       
+        //delete from cart
         $this->cart = $this->cart->reject(function ($product) use ($uid) {
             return $product['id'] === $uid;
         });
 
         $this->save();
 
-        //add item to cart           
+        //add item to cart
         $this->cart->push(Arr::add(
             $newItem,
             null,
@@ -228,14 +239,14 @@ class Purchases extends Component
 
             $newItem['total'] = round($newItem['qty'] * $newItem['cost'], 2);
 
-            //delete from cart       
+            //delete from cart
             $this->cart = $this->cart->reject(function ($product) use ($uid) {
                 return $product['id'] === $uid;
             });
 
             $this->save();
 
-            //add item to cart           
+            //add item to cart
             $this->cart->push(Arr::add($newItem,  null,  null));
         } else {
             $this->cart = $this->cart->reject(function ($product) use ($uid) {

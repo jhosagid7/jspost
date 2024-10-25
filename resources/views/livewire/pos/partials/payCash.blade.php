@@ -49,9 +49,9 @@
                                 <select class="form-control crypto-select info" disabled>
                                     <option>EFECTIVO:</option>
                                 </select>
-                                <input class="form-control" oninput="validarInputNumber(this)"
+                                <input class="form-control" oninput="validarInputNumbers(this)"
                                     wire:model.live.debounce.750ms="cashAmount" wire:keydown.enter.prevent='Store'
-                                    type="number" id="inputCash">
+                                    type="number" step="0.01" id="inputCash">
                             </div>
                         </div>
 
@@ -62,7 +62,7 @@
                                 <select class="form-control crypto-select info" disabled>
                                     <option>N°. TELÉFONO:</option>
                                 </select>
-                                <input class="form-control" oninput="validarInputNumber(this)"
+                                <input class="form-control" oninput="validarInputNumbers(this)"
                                     wire:model.live.debounce.750ms="phoneNumber" wire:keydown.enter.prevent='Store'
                                     type="number" id="phoneNumber">
                             </div>
@@ -76,8 +76,8 @@
                                     <option>VALOR CONSIGNADO:</option>
                                 </select>
                                 <input class="form-control {{ $phoneNumber > 0 ? 'd:block' : 'd-none' }}"
-                                    oninput="validarInputNumber(this)" wire:model.live.debounce.750ms="nequiAmount"
-                                    wire:keydown.enter.prevent='Store' type="number" id="inputNequi">
+                                    oninput="validarInputNumbers(this)" wire:model.live.debounce.750ms="nequiAmount"
+                                    wire:keydown.enter.prevent='Store' type="number" step="0.01" id="inputNequi">
                             </div>
                         </div>
 

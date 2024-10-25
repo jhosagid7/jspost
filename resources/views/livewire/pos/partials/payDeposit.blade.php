@@ -47,9 +47,9 @@
                     <div class="input-group mt-4">
                         <select class="form-select" id="selBank">
                             @forelse($banks as $bank)
-                            <option value="{{$bank->id}}">{{$bank->name}}</option>
+                                <option value="{{ $bank->id }}">{{ $bank->name }}</option>
                             @empty
-                            <option value="-1" disabled>No hay bancos registrados</option>
+                                <option value="-1" disabled>No hay bancos registrados</option>
                             @endforelse
                         </select>
                     </div>
@@ -63,7 +63,7 @@
                             <select class="form-control crypto-select info" disabled>
                                 <option>N°. CUENTA:</option>
                             </select>
-                            <input class="form-control" oninput="validarInputNumber(this)"
+                            <input class="form-control" oninput="validarInputNumbers(this)"
                                 wire:model.live.debounce.500ms="acountNumber" type="text">
                         </div>
                     </div>
@@ -72,7 +72,7 @@
                             <select class="form-control crypto-select info" disabled>
                                 <option>N°. DEPÓSITO:</option>
                             </select>
-                            <input class="form-control" oninput="validarInputNumber(this)"
+                            <input class="form-control" oninput="validarInputNumbers(this)"
                                 wire:model.live.debounce.500ms="depositNumber" wire:keydown.enter.prevent='Store'
                                 type="text">
                         </div>
@@ -93,8 +93,8 @@
                     <button class="btn btn-secondary " type="button" data-bs-dismiss="modal">Cerrar</button>
 
                     <button class="btn btn-primary" wire:click.prevent='Store' type="button"
-                        wire:loading.attr="disabled" {{ floatval($totalCart)==0 ? 'disabled' : '' }} {{
-                        $acountNumber==null || $depositNumber==null ? 'disabled' : '' }}>
+                        wire:loading.attr="disabled" {{ floatval($totalCart) == 0 ? 'disabled' : '' }}
+                        {{ $acountNumber == null || $depositNumber == null ? 'disabled' : '' }}>
 
                         <span wire:loading.remove wire:target="Store">
                             Registrar

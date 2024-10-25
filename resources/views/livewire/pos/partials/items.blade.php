@@ -93,14 +93,14 @@
                                     @if (count($item['pricelist']) == 0)
                                         <input
                                             wire:keydown.enter.prevent="setCustomPrice('{{ $item['id'] }}', $event.target.value )"
-                                            type="text" oninput="justNumber(this)" class="text-center form-control"
+                                            type="text" oninput="justNumbers(this)" class="text-center form-control"
                                             value="{{ $item['sale_price'] }}">
                                     @else
                                         <div class="mb-3">
                                             <div class="position-relative">
                                                 <input class="form-control" id="inputPrice{{ $item['id'] }}"
                                                     wire:keydown.enter.prevent="setCustomPrice('{{ $item['id'] }}', $event.target.value )"
-                                                    oninput="justNumber(this)" type="text"
+                                                    oninput="justNumbers(this)" type="text"
                                                     placeholder="{{ $item['sale_price'] }}">
                                                 <select class="form-select crypto-select warning"
                                                     wire:change="setCustomPrice('{{ $item['id'] }}', $event.target.value )">
@@ -123,8 +123,8 @@
                                             </button>
                                             <input
                                                 wire:keydown.enter.prevent="updateQty('{{ $item['id'] }}', $event.target.value )"
-                                                class=" input-touchspin" type="number" value="{{ $item['qty'] }}"
-                                                id="p{{ $item['pid'] }}">
+                                                class=" input-touchspin" type="number" step="0.01"
+                                                value="{{ $item['qty'] }}" id="p{{ $item['pid'] }}">
 
                                             <button
                                                 onclick="updateQty({{ $item['pid'] }},'{{ $item['id'] }}', 'increment')"
