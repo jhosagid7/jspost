@@ -22,7 +22,7 @@ class Purchases extends Component
     public $taxCart = 0, $itemsCart, $subtotalCart = 0, $totalCart = 0, $ivaCart = 0, $status = 'paid', $purchaseType = 'cash', $notes;
     public $supplier, $flete;
     public $search, $productSelected;
-    public $config, $vat;
+    public $config, $vat = 0;
 
     public function mount()
     {
@@ -119,6 +119,12 @@ class Purchases extends Component
 
         $uid = uniqid() . $product->id;
 
+        if ($this->config->vat > 0) {
+            $tax = ($total / $this->iva) * $this->iva;
+        } else {
+            $tax = 0;
+        }
+
         $coll = collect(
             [
                 'id' => $uid,
@@ -127,7 +133,7 @@ class Purchases extends Component
                 'cost' => $cost,
                 'qty' => floatval($qty),
                 'total' => $total,
-                'tax' => ($total / $this->iva) * $this->iva,
+                'tax' => $tax,
                 'flete' => array('flete_producto' =>  0, 'total_flete' => 0, 'valor_flete' => 0, 'nuevo_total' => 0),
 
 
