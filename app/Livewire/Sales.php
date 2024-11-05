@@ -31,7 +31,7 @@ class Sales extends Component
     public $taxCart = 0, $itemsCart, $subtotalCart = 0, $totalCart = 0, $ivaCart = 0;
 
     public $config, $customer, $iva = 0;
-    //register customer
+    //register customer all
     public $cname, $caddress, $ccity, $cemail, $cphone, $ctaxpayerId, $ctype = 'Consumidor Final';
 
     //pay properties
